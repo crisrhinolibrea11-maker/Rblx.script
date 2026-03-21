@@ -1,0 +1,37 @@
+local player = game.Players.LocalPlayer
+
+-- UI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(0.4,0,0.1,0)
+text.Position = UDim2.new(0.3,0,0.45,0)
+text.TextScaled = true
+text.BackgroundTransparency = 0.3
+text.Text = "Loading Script..."
+text.Parent = screenGui
+
+-- Sound
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://9129990197"
+sound.Volume = 5
+sound.Parent = workspace
+
+-- Fake loading
+task.wait(1.5)
+text.Text = "Injecting UI..."
+task.wait(1.5)
+text.Text = "Loading Teleport System..."
+task.wait(1.5)
+text.Text = "Bypassing Anti-Cheat..."
+task.wait(1.5)
+text.Text = "Finalizing..."
+task.wait(1)
+
+-- Play scary sound
+sound:Play()
+task.wait(2)
+
+-- 💀 Kick with formatted message
+player:Kick("You have been banned for using exploits\n\nDuration: 3 years")
