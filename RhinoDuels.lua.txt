@@ -1862,5 +1862,10 @@ local uiVisible = true
 
 toggleBtn.Activated:Connect(function()
     uiVisible = not uiVisible
-    sg.Enabled = uiVisible
+
+    for _, v in pairs(sg:GetChildren()) do
+        if v ~= toggleBtn then
+            v.Visible = uiVisible
+        end
+    end
 end)
