@@ -36,6 +36,13 @@ stroke.Thickness = 2 * guiScale
 stroke.Color = Color3.fromRGB(0, 255, 0)
 
 local uiVisible = true
+local function toggleUI()
+    uiVisible = not uiVisible
+    main.Visible = uiVisible
+    progressBar.Visible = uiVisible
+end
+
+toggleBtn.Activated:Connect(toggleUI)
 local W, H = 560 * guiScale, 600 * guiScale
 
 local Features = {
