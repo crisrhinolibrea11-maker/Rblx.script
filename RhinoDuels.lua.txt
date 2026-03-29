@@ -36,13 +36,6 @@ stroke.Thickness = 2 * guiScale
 stroke.Color = Color3.fromRGB(0, 255, 0)
 
 local uiVisible = true
-local function toggleUI()
-    uiVisible = not uiVisible
-    main.Visible = uiVisible
-    progressBar.Visible = uiVisible
-end
-
-toggleBtn.Activated:Connect(toggleUI)
 local W, H = 560 * guiScale, 600 * guiScale
 
 local Features = {
@@ -173,6 +166,13 @@ ProgressLabel.ZIndex = 1
 ProgressLabel.Visible = false
 
 local main = Instance.new("Frame", sg)
+local function toggleUI()
+    uiVisible = not uiVisible
+    main.Visible = uiVisible
+    progressBar.Visible = uiVisible
+end
+
+toggleBtn.Activated:Connect(toggleUI)
 main.Name = "Main"
 main.Size = UDim2.new(0, W, 0, H)
 main.Position = isMobile
