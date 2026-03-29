@@ -657,6 +657,9 @@ local function toggleUI()
     progressBar.Visible = uiVisible
 end
 toggleBtn.Activated:Connect(toggleUI)
+toggleBtn.Activated:Connect(function()
+    print("clicked")
+end)
     ToggleControls.SpeedBoost = {setVisual = setVisual, start = startSpeedBoost, stop = stopSpeedBoost}
 end
 
