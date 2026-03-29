@@ -1856,25 +1856,11 @@ for name, ctrl in pairs(ToggleControls) do
         ctrl.start()
     end
 end
-
-local visible = true
-UserInputService.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.KeyCode == Enum.KeyCode.U then
-        visible = not visible
-        main.Visible = visible
-    end
-end)
-local uiVisible = true
-
 toggleBtn.Active = true
+
+local uiVisible = true
 
 toggleBtn.Activated:Connect(function()
     uiVisible = not uiVisible
-
-    for _, v in pairs(sg:GetChildren()) do
-        if v ~= toggleBtn then
-            v.Visible = uiVisible
-        end
-    end
+    sg.Enabled = uiVisible
 end)
