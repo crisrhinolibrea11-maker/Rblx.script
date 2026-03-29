@@ -1865,3 +1865,16 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         main.Visible = visible
     end
 end)
+local uiVisible = true
+
+toggleBtn.Active = true
+
+toggleBtn.Activated:Connect(function()
+    uiVisible = not uiVisible
+
+    for _, v in pairs(sg:GetChildren()) do
+        if v ~= toggleBtn then
+            v.Visible = uiVisible
+        end
+    end
+end)
