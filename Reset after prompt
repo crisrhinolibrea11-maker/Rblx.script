@@ -9,11 +9,11 @@ local enabled = true
 local lastPosition = nil
 local lastToolName = nil
 
+local playerGui = player:WaitForChild("PlayerGui")
+
 -- =========================
 -- 🖤 WATERMARK (1 SEC)
 -- =========================
-local playerGui = player:WaitForChild("PlayerGui")
-
 task.spawn(function()
     local intro = Instance.new("ScreenGui")
     intro.IgnoreGuiInset = true
@@ -57,14 +57,8 @@ Instance.new("UICorner", button).CornerRadius = UDim.new(0,10)
 
 button.MouseButton1Click:Connect(function()
     enabled = not enabled
-    
-    if enabled then
-        button.Text = "Reset: ON"
-        button.BackgroundColor3 = Color3.fromRGB(0,170,0)
-    else
-        button.Text = "Reset: OFF"
-        button.BackgroundColor3 = Color3.fromRGB(170,0,0)
-    end
+    button.Text = enabled and "Reset: ON" or "Reset: OFF"
+    button.BackgroundColor3 = enabled and Color3.fromRGB(0,170,0) or Color3.fromRGB(170,0,0)
 end)
 
 -- =========================
@@ -113,18 +107,19 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- =========================
--- 🔄 SAVE DATA + RESET
+-- 🔄 SAVE + RESET
 -- =========================
 ProximityPromptService.PromptTriggered:Connect(function(prompt, plr)
     if plr == player and enabled then
         local char = player.Character
-        
+
         if char then
             local hrp = char:FindFirstChild("HumanoidRootPart")
             if hrp then
                 lastPosition = hrp.CFrame
             end
-            
+
+            -- ✅ ONLY TOOL YOU WERE HOLDING
             local tool = char:FindFirstChildOfClass("Tool")
             lastToolName = tool and tool.Name or nil
 
@@ -134,10 +129,11 @@ ProximityPromptService.PromptTriggered:Connect(function(prompt, plr)
 end)
 
 -- =========================
--- 📍 TP + 🔁 RE-EQUIP (FIXED)
+-- 📍 TP + 🔁 RE-EQUIP
 -- =========================
 player.CharacterAdded:Connect(function(char)
     local hrp = char:WaitForChild("HumanoidRootPart")
+    local humanoid = char:WaitForChild("Humanoid")
 
     -- teleport back
     if lastPosition then
@@ -145,16 +141,18 @@ player.CharacterAdded:Connect(function(char)
         hrp.CFrame = lastPosition
     end
 
-    -- re-equip tool (retry system)
+    -- re-equip EXACT tool (from Backpack)
     if lastToolName then
         local backpack = player:WaitForChild("Backpack")
 
-        for i = 1, 10 do
+        for i = 1, 15 do
             local tool = backpack:FindFirstChild(lastToolName)
+
             if tool then
-                tool.Parent = char
+                humanoid:EquipTool(tool)
                 break
             end
+
             task.wait(0.2)
         end
     end
