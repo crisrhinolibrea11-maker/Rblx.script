@@ -7,7 +7,49 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local enabled = true
 
--- GUI
+-- =========================
+-- 🔥 WATERMARK INTRO
+-- =========================
+local introGui = Instance.new("ScreenGui")
+introGui.ResetOnSpawn = false
+introGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1,0,1,0)
+frame.BackgroundColor3 = Color3.new(0,0,0)
+frame.BackgroundTransparency = 1
+frame.Parent = introGui
+
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(1,0,1,0)
+text.BackgroundTransparency = 1
+text.Text = "Made by: Rhino"
+text.TextScaled = true
+text.TextColor3 = Color3.new(1,1,1)
+text.Font = Enum.Font.GothamBold
+text.Parent = frame
+
+-- Fade in
+for i = 1, 15 do
+	frame.BackgroundTransparency = 1 - (i * 0.06)
+	text.TextTransparency = 1 - (i * 0.06)
+	task.wait(0.02)
+end
+
+task.wait(1)
+
+-- Fade out
+for i = 1, 15 do
+	frame.BackgroundTransparency = i * 0.06
+	text.TextTransparency = i * 0.06
+	task.wait(0.02)
+end
+
+introGui:Destroy()
+
+-- =========================
+-- 🔘 TOGGLE BUTTON
+-- =========================
 local gui = Instance.new("ScreenGui")
 gui.Parent = player:WaitForChild("PlayerGui")
 
@@ -21,7 +63,6 @@ button.Parent = gui
 
 Instance.new("UICorner", button).CornerRadius = UDim.new(0,10)
 
--- Toggle
 button.MouseButton1Click:Connect(function()
     enabled = not enabled
     
@@ -35,7 +76,7 @@ button.MouseButton1Click:Connect(function()
 end)
 
 -- =========================
--- 🟢 DRAG SYSTEM (MOBILE + PC)
+-- 📱 DRAG SYSTEM
 -- =========================
 local dragging = false
 local dragInput, dragStart, startPos
