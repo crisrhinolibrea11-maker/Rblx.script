@@ -6,17 +6,17 @@ local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 local enabled = true
+local lastPosition = nil
 
 -- =========================
--- 🔥 INTRO (SAFE)
+-- 🔥 INTRO
 -- =========================
 local playerGui = player:WaitForChild("PlayerGui")
 
 local introGui = Instance.new("ScreenGui")
-introGui.Name = "IntroGui"
 introGui.IgnoreGuiInset = true
 introGui.ResetOnSpawn = false
-introGui.DisplayOrder = 999 -- stays on top
+introGui.DisplayOrder = 999
 introGui.Parent = playerGui
 
 local frame = Instance.new("Frame")
@@ -34,14 +34,12 @@ text.Font = Enum.Font.GothamBold
 text.Parent = frame
 
 task.wait(1)
-
 introGui:Destroy()
 
 -- =========================
--- 🔘 BUTTON (LOAD AFTER INTRO)
+-- 🔘 BUTTON
 -- =========================
 local gui = Instance.new("ScreenGui")
-gui.Name = "MainGui"
 gui.ResetOnSpawn = false
 gui.Parent = playerGui
 
@@ -55,7 +53,6 @@ button.Parent = gui
 
 Instance.new("UICorner", button).CornerRadius = UDim.new(0,10)
 
--- Toggle
 button.MouseButton1Click:Connect(function()
     enabled = not enabled
     
@@ -114,13 +111,28 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- =========================
--- 🔄 AUTO RESET
+-- 🔄 SAVE POSITION + RESET
 -- =========================
 ProximityPromptService.PromptTriggered:Connect(function(prompt, plr)
     if plr == player and enabled then
-        local char = player.Character or player.CharacterAdded:Wait()
-        if char then
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            -- Save position before reset
+            lastPosition = char.HumanoidRootPart.CFrame
+            
+            -- Reset
             char:BreakJoints()
         end
+    end
+end)
+
+-- =========================
+-- 📍 TELEPORT BACK AFTER RESPAWN
+-- =========================
+player.CharacterAdded:Connect(function(char)
+    if lastPosition then
+        local hrp = char:WaitForChild("HumanoidRootPart")
+        task.wait(0.2) -- small delay to ensure loaded
+        hrp.CFrame = lastPosition
     end
 end)
