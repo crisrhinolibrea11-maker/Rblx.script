@@ -10,35 +10,36 @@ local lastPosition = nil
 local lastToolName = nil
 
 -- =========================
--- 🔥 INTRO
+-- 🖤 WATERMARK (1 SEC)
 -- =========================
 local playerGui = player:WaitForChild("PlayerGui")
 
-local introGui = Instance.new("ScreenGui")
-introGui.IgnoreGuiInset = true
-introGui.ResetOnSpawn = false
-introGui.DisplayOrder = 999
-introGui.Parent = playerGui
+task.spawn(function()
+    local intro = Instance.new("ScreenGui")
+    intro.IgnoreGuiInset = true
+    intro.DisplayOrder = 999
+    intro.Parent = playerGui
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(1,0,1,0)
-frame.BackgroundColor3 = Color3.new(0,0,0)
-frame.Parent = introGui
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1,0,1,0)
+    frame.BackgroundColor3 = Color3.new(0,0,0)
+    frame.Parent = intro
 
-local text = Instance.new("TextLabel")
-text.Size = UDim2.new(1,0,1,0)
-text.BackgroundTransparency = 1
-text.Text = "Made by: Rhino"
-text.TextScaled = true
-text.TextColor3 = Color3.new(1,1,1)
-text.Font = Enum.Font.GothamBold
-text.Parent = frame
+    local text = Instance.new("TextLabel")
+    text.Size = UDim2.new(1,0,1,0)
+    text.BackgroundTransparency = 1
+    text.Text = "Made by: Rhino"
+    text.TextScaled = true
+    text.TextColor3 = Color3.new(1,1,1)
+    text.Font = Enum.Font.GothamBold
+    text.Parent = frame
 
-task.wait(1)
-introGui:Destroy()
+    task.wait(1)
+    intro:Destroy()
+end)
 
 -- =========================
--- 🔘 BUTTON
+-- 🔘 TOGGLE BUTTON
 -- =========================
 local gui = Instance.new("ScreenGui")
 gui.ResetOnSpawn = false
@@ -67,7 +68,7 @@ button.MouseButton1Click:Connect(function()
 end)
 
 -- =========================
--- 📱 DRAG
+-- 📱 DRAG SYSTEM
 -- =========================
 local dragging = false
 local dragInput, dragStart, startPos
@@ -112,7 +113,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- =========================
--- 🔄 SAVE POSITION + TOOL + RESET
+-- 🔄 SAVE DATA + RESET
 -- =========================
 ProximityPromptService.PromptTriggered:Connect(function(prompt, plr)
     if plr == player and enabled then
@@ -124,13 +125,8 @@ ProximityPromptService.PromptTriggered:Connect(function(prompt, plr)
                 lastPosition = hrp.CFrame
             end
             
-            -- Save equipped tool
             local tool = char:FindFirstChildOfClass("Tool")
-            if tool then
-                lastToolName = tool.Name
-            else
-                lastToolName = nil
-            end
+            lastToolName = tool and tool.Name or nil
 
             char:BreakJoints()
         end
@@ -138,25 +134,28 @@ ProximityPromptService.PromptTriggered:Connect(function(prompt, plr)
 end)
 
 -- =========================
--- 📍 TELEPORT + RE-EQUIP
+-- 📍 TP + 🔁 RE-EQUIP (FIXED)
 -- =========================
 player.CharacterAdded:Connect(function(char)
     local hrp = char:WaitForChild("HumanoidRootPart")
 
-    -- Teleport back
+    -- teleport back
     if lastPosition then
-        task.wait(0.2)
+        task.wait(0.3)
         hrp.CFrame = lastPosition
     end
 
-    -- Re-equip tool
+    -- re-equip tool (retry system)
     if lastToolName then
-        task.wait(0.3)
         local backpack = player:WaitForChild("Backpack")
-        local tool = backpack:FindFirstChild(lastToolName)
-        
-        if tool then
-            tool.Parent = char -- equips it
+
+        for i = 1, 10 do
+            local tool = backpack:FindFirstChild(lastToolName)
+            if tool then
+                tool.Parent = char
+                break
+            end
+            task.wait(0.2)
         end
     end
 end)
