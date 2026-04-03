@@ -8,16 +8,20 @@ local player = Players.LocalPlayer
 local enabled = true
 
 -- =========================
--- 🔥 WATERMARK INTRO
+-- 🔥 INTRO (SAFE)
 -- =========================
+local playerGui = player:WaitForChild("PlayerGui")
+
 local introGui = Instance.new("ScreenGui")
+introGui.Name = "IntroGui"
+introGui.IgnoreGuiInset = true
 introGui.ResetOnSpawn = false
-introGui.Parent = player:WaitForChild("PlayerGui")
+introGui.DisplayOrder = 999 -- stays on top
+introGui.Parent = playerGui
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(1,0,1,0)
 frame.BackgroundColor3 = Color3.new(0,0,0)
-frame.BackgroundTransparency = 1
 frame.Parent = introGui
 
 local text = Instance.new("TextLabel")
@@ -29,29 +33,17 @@ text.TextColor3 = Color3.new(1,1,1)
 text.Font = Enum.Font.GothamBold
 text.Parent = frame
 
--- Fade in
-for i = 1, 15 do
-	frame.BackgroundTransparency = 1 - (i * 0.06)
-	text.TextTransparency = 1 - (i * 0.06)
-	task.wait(0.02)
-end
-
 task.wait(1)
-
--- Fade out
-for i = 1, 15 do
-	frame.BackgroundTransparency = i * 0.06
-	text.TextTransparency = i * 0.06
-	task.wait(0.02)
-end
 
 introGui:Destroy()
 
 -- =========================
--- 🔘 TOGGLE BUTTON
+-- 🔘 BUTTON (LOAD AFTER INTRO)
 -- =========================
 local gui = Instance.new("ScreenGui")
-gui.Parent = player:WaitForChild("PlayerGui")
+gui.Name = "MainGui"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
 
 local button = Instance.new("TextButton")
 button.Size = UDim2.new(0,120,0,50)
@@ -63,6 +55,7 @@ button.Parent = gui
 
 Instance.new("UICorner", button).CornerRadius = UDim.new(0,10)
 
+-- Toggle
 button.MouseButton1Click:Connect(function()
     enabled = not enabled
     
@@ -76,7 +69,7 @@ button.MouseButton1Click:Connect(function()
 end)
 
 -- =========================
--- 📱 DRAG SYSTEM
+-- 📱 DRAG
 -- =========================
 local dragging = false
 local dragInput, dragStart, startPos
@@ -121,7 +114,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- =========================
--- 🔄 AUTO RESET AFTER PROMPT
+-- 🔄 AUTO RESET
 -- =========================
 ProximityPromptService.PromptTriggered:Connect(function(prompt, plr)
     if plr == player and enabled then
