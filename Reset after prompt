@@ -7,6 +7,7 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local enabled = true
 local lastPosition = nil
+local lastToolName = nil
 
 -- =========================
 -- 🔥 INTRO
@@ -111,28 +112,51 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- =========================
--- 🔄 SAVE POSITION + RESET
+-- 🔄 SAVE POSITION + TOOL + RESET
 -- =========================
 ProximityPromptService.PromptTriggered:Connect(function(prompt, plr)
     if plr == player and enabled then
         local char = player.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            -- Save position before reset
-            lastPosition = char.HumanoidRootPart.CFrame
+        
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                lastPosition = hrp.CFrame
+            end
             
-            -- Reset
+            -- Save equipped tool
+            local tool = char:FindFirstChildOfClass("Tool")
+            if tool then
+                lastToolName = tool.Name
+            else
+                lastToolName = nil
+            end
+
             char:BreakJoints()
         end
     end
 end)
 
 -- =========================
--- 📍 TELEPORT BACK AFTER RESPAWN
+-- 📍 TELEPORT + RE-EQUIP
 -- =========================
 player.CharacterAdded:Connect(function(char)
+    local hrp = char:WaitForChild("HumanoidRootPart")
+
+    -- Teleport back
     if lastPosition then
-        local hrp = char:WaitForChild("HumanoidRootPart")
-        task.wait(0.2) -- small delay to ensure loaded
+        task.wait(0.2)
         hrp.CFrame = lastPosition
+    end
+
+    -- Re-equip tool
+    if lastToolName then
+        task.wait(0.3)
+        local backpack = player:WaitForChild("Backpack")
+        local tool = backpack:FindFirstChild(lastToolName)
+        
+        if tool then
+            tool.Parent = char -- equips it
+        end
     end
 end)
